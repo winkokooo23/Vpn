@@ -86,10 +86,9 @@ class MainActivity : Activity() {
         val frame = FrameLayout(this).apply { setBackgroundColor(bgColor) }
         frame.addView(TechBackdropView(this), FrameLayout.LayoutParams(-1, -1))
 
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-            overScrollMode = View.OVER_SCROLL_NEVER
+        val scroll = FrameLayout(this).apply {
             setBackgroundColor(Color.TRANSPARENT)
+            clipChildren = false
         }
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
