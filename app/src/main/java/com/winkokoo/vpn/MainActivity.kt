@@ -86,122 +86,119 @@ class MainActivity : Activity() {
         val frame = FrameLayout(this).apply { setBackgroundColor(bgColor) }
         frame.addView(TechBackdropView(this), FrameLayout.LayoutParams(-1, -1))
 
-        val scroll = FrameLayout(this).apply {
-            setBackgroundColor(Color.TRANSPARENT)
-            clipChildren = false
-        }
+        val compact = resources.displayMetrics.heightPixels / resources.displayMetrics.density < 780f
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(22), dp(18), dp(22), dp(24))
+            setPadding(dp(if (compact) 12 else 18), dp(if (compact) 8 else 14), dp(if (compact) 12 else 18), dp(if (compact) 8 else 14))
         }
+        frame.addView(root, FrameLayout.LayoutParams(-1, -1))
 
-        val top = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-        }
-        top.addView(iconText("☰", 29f, text), LinearLayout.LayoutParams(dp(48), dp(48)))
+        val top = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+        top.addView(iconText("☰", if (compact) 24f else 28f, text), LinearLayout.LayoutParams(dp(42), dp(40)))
         top.addView(Space(this), LinearLayout.LayoutParams(0, 1, 1f))
-        top.addView(outlineButton("👑  PRO", Color.rgb(255, 184, 53), 120), LinearLayout.LayoutParams(dp(120), dp(46)))
-        top.addView(iconText("↗", 28f, text), LinearLayout.LayoutParams(dp(46), dp(48)))
-        top.addView(iconText("⚙", 28f, text), LinearLayout.LayoutParams(dp(46), dp(48)))
-        root.addView(top, match().apply { bottomMargin = dp(8) })
+        top.addView(outlineButton("👑  PRO", Color.rgb(255, 184, 53), 0), LinearLayout.LayoutParams(dp(104), dp(38)))
+        top.addView(iconText("↗", 24f, text), LinearLayout.LayoutParams(dp(40), dp(40)))
+        top.addView(iconText("⚙", 24f, text), LinearLayout.LayoutParams(dp(40), dp(40)))
+        root.addView(top, match().apply { bottomMargin = dp(2) })
 
         val heroLogo = ImageView(this).apply {
             setImageResource(R.drawable.winkoko_launcher_logo)
             scaleType = ImageView.ScaleType.CENTER_INSIDE
-            adjustViewBounds = true
             setPadding(dp(8), 0, dp(8), 0)
             contentDescription = "WinKoKo VPN logo"
         }
-        root.addView(heroLogo, LinearLayout.LayoutParams(-1, dp(190)).apply { bottomMargin = dp(2) })
-        root.addView(textView("WinKoKo VPN", 34f, text, Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(3) })
-        root.addView(textView("F a s t   •   S e c u r e   •   U n l i m i t e d", 13f, Color.rgb(224, 233, 255), Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(18) })
+        root.addView(heroLogo, LinearLayout.LayoutParams(-1, dp(if (compact) 116 else 145)))
+        root.addView(textView("WinKoKo VPN", if (compact) 27f else 31f, text, Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(1) })
+        root.addView(textView("F a s t  •  S e c u r e  •  U n l i m i t e d", 11f, Color.rgb(224, 233, 255), Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(if (compact) 6 else 10) })
 
-        val subscription = glassCard()
+        val subscription = glassCard().apply { setPadding(dp(10), dp(7), dp(10), dp(7)) }
         val subscriptionRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        subscriptionRow.addView(iconTile("↗", Color.rgb(32, 106, 210)), LinearLayout.LayoutParams(dp(74), dp(74)))
-        val urlColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(14), 0, dp(8), 0) }
-        urlColumn.addView(textView("V2Ray Subscription URL", 15f, Color.rgb(206, 219, 246), Typeface.DEFAULT, Gravity.START), match().apply { bottomMargin = dp(2) })
+        subscriptionRow.addView(iconTile("↗", Color.rgb(32, 106, 210)), LinearLayout.LayoutParams(dp(if (compact) 52 else 62), dp(if (compact) 52 else 62)))
+        val urlColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(10), 0, dp(6), 0) }
+        urlColumn.addView(textView("V2Ray Subscription URL", 12f, Color.rgb(206, 219, 246), Typeface.DEFAULT, Gravity.START))
         subscriptionUrl = EditText(this).apply {
             hint = "Paste your subscription URL here..."
-            setHintTextColor(Color.rgb(133, 151, 192))
-            setTextColor(this@MainActivity.text)
-            textSize = 14f
-            setSingleLine(true)
-            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_URI
-            setPadding(0, dp(3), 0, dp(3))
-            background = null
+            setHintTextColor(Color.rgb(133, 151, 192)); setTextColor(this@MainActivity.text); textSize = 12f
+            setSingleLine(true); inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_URI
+            setPadding(0, 0, 0, 0); background = null
         }
-        urlColumn.addView(subscriptionUrl, LinearLayout.LayoutParams(-1, dp(42)))
+        urlColumn.addView(subscriptionUrl, LinearLayout.LayoutParams(-1, dp(32)))
         subscriptionRow.addView(urlColumn, LinearLayout.LayoutParams(0, -2, 1f))
-        subscriptionRow.addView(outlineButton("▣", Color.WHITE, 52), LinearLayout.LayoutParams(dp(52), dp(52)).apply { rightMargin = dp(10) })
-        updateButton = gradientButton("☁  UPDATE", 15f)
-        subscriptionRow.addView(updateButton, LinearLayout.LayoutParams(dp(170), dp(58)))
+        subscriptionRow.addView(outlineButton("▣", Color.WHITE, 0), LinearLayout.LayoutParams(dp(42), dp(42)).apply { rightMargin = dp(6) })
+        updateButton = gradientButton("☁  UPDATE", 12f)
+        subscriptionRow.addView(updateButton, LinearLayout.LayoutParams(dp(if (compact) 116 else 132), dp(if (compact) 46 else 50)))
         subscription.addView(subscriptionRow)
-        root.addView(subscription, match().apply { bottomMargin = dp(16) })
+        root.addView(subscription, match().apply { bottomMargin = dp(7) })
 
-        val server = glassCard()
+        val server = glassCard().apply { setPadding(dp(10), dp(7), dp(10), dp(7)) }
         val serverRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        serverRow.addView(iconTile("▤", Color.rgb(30, 91, 193)), LinearLayout.LayoutParams(dp(74), dp(74)))
-        val serverColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(14), 0, dp(12), 0) }
-        serverColumn.addView(textView("Server", 15f, Color.rgb(206, 219, 246), Typeface.DEFAULT, Gravity.START))
+        serverRow.addView(iconTile("▤", Color.rgb(30, 91, 193)), LinearLayout.LayoutParams(dp(if (compact) 52 else 62), dp(if (compact) 52 else 62)))
+        val serverColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(10), 0, dp(8), 0) }
+        serverColumn.addView(textView("Server", 12f, Color.rgb(206, 219, 246), Typeface.DEFAULT, Gravity.START))
         nodeSpinner = Spinner(this).apply { setBackgroundColor(Color.TRANSPARENT) }
-        serverColumn.addView(nodeSpinner, LinearLayout.LayoutParams(-1, dp(46)))
+        serverColumn.addView(nodeSpinner, LinearLayout.LayoutParams(-1, dp(34)))
         serverRow.addView(serverColumn, LinearLayout.LayoutParams(0, -2, 1f))
-        serverRow.addView(outlineButton("☷  SERVER LIST", Color.WHITE, 185), LinearLayout.LayoutParams(dp(185), dp(58)))
+        val serverListButton = outlineButton("☷  SERVER LIST", Color.WHITE, 0)
+        serverRow.addView(serverListButton, LinearLayout.LayoutParams(dp(if (compact) 126 else 148), dp(if (compact) 46 else 50)))
         server.addView(serverRow)
-        root.addView(server, match().apply { bottomMargin = dp(18) })
+        root.addView(server, match().apply { bottomMargin = dp(7) })
 
         connectButton = Button(this).apply {
-            text = "⏻\nCONNECT"
-            textSize = 19f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            isAllCaps = false
-            gravity = Gravity.CENTER
+            text = "⏻\nCONNECT"; textSize = if (compact) 16f else 18f; setTextColor(Color.WHITE); typeface = Typeface.DEFAULT_BOLD
+            isAllCaps = false; gravity = Gravity.CENTER
             background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(Color.rgb(13, 40, 111), Color.rgb(7, 104, 219))).apply { shape = GradientDrawable.OVAL; setStroke(dp(4), Color.rgb(26, 169, 255)) }
-            elevation = dp(8).toFloat()
+            elevation = dp(6).toFloat(); minHeight = 0
         }
-        val connectFrame = FrameLayout(this).apply { addView(connectButton, FrameLayout.LayoutParams(dp(230), dp(230), Gravity.CENTER)) }
-        root.addView(connectFrame, match().apply { height = dp(250); bottomMargin = dp(8) })
+        val connectFrame = FrameLayout(this).apply { addView(connectButton, FrameLayout.LayoutParams(dp(if (compact) 158 else 188), dp(if (compact) 158 else 188), Gravity.CENTER)) }
+        root.addView(connectFrame, match().apply { height = dp(if (compact) 168 else 198); bottomMargin = dp(2) })
 
-        val statusCard = pill()
-        statusDot = TextView(this).apply { text = "●"; textSize = 18f; setTextColor(Color.rgb(255, 68, 92)) }
-        statusText = textView("Disconnected", 16f, Color.rgb(255, 86, 108), Typeface.DEFAULT_BOLD, Gravity.START)
-        statusCard.addView(statusDot, LinearLayout.LayoutParams(dp(30), -2))
-        statusCard.addView(statusText, LinearLayout.LayoutParams(0, -2, 1f))
-        statusCard.addView(textView("Not connected", 13f, Color.rgb(172, 190, 230), Typeface.DEFAULT, Gravity.END))
-        root.addView(statusCard, match().apply { height = dp(58); bottomMargin = dp(16) })
+        val statusCard = pill().apply { setPadding(dp(12), dp(5), dp(12), dp(5)) }
+        statusDot = TextView(this).apply { text = "●"; textSize = 15f; setTextColor(Color.rgb(255, 68, 92)) }
+        statusText = textView("Disconnected", 14f, Color.rgb(255, 86, 108), Typeface.DEFAULT_BOLD, Gravity.START)
+        statusCard.addView(statusDot, LinearLayout.LayoutParams(dp(25), -2)); statusCard.addView(statusText, LinearLayout.LayoutParams(0, -2, 1f))
+        statusCard.addView(textView("Not connected", 11f, Color.rgb(172, 190, 230), Typeface.DEFAULT, Gravity.END))
+        root.addView(statusCard, match().apply { height = dp(42); bottomMargin = dp(7) })
 
-        val stats = LinearLayout(this).apply { gravity = Gravity.CENTER; background = rounded(Color.argb(100, 7, 32, 82), 18); setPadding(dp(6), dp(12), dp(6), dp(12)) }
-        stats.addView(stat("⬇", "Download", "0 B/s", Color.rgb(0, 246, 184)), weight(1f))
-        stats.addView(stat("◷", "Duration", "00:00:00", Color.rgb(35, 190, 255)), weight(1f))
-        stats.addView(stat("⬆", "Upload", "0 B/s", Color.rgb(255, 73, 233)), weight(1f))
-        root.addView(stats, match().apply { bottomMargin = dp(14) })
+        val stats = LinearLayout(this).apply { gravity = Gravity.CENTER; background = rounded(Color.argb(100, 7, 32, 82), 16); setPadding(dp(4), dp(4), dp(4), dp(4)) }
+        stats.addView(stat("⬇", "Download", "0 B/s", Color.rgb(0, 246, 184)), weight(1f)); stats.addView(stat("◷", "Duration", "00:00:00", Color.rgb(35, 190, 255)), weight(1f)); stats.addView(stat("⬆", "Upload", "0 B/s", Color.rgb(255, 73, 233)), weight(1f))
+        root.addView(stats, match().apply { height = dp(if (compact) 58 else 64); bottomMargin = dp(7) })
 
         val info = LinearLayout(this).apply { gravity = Gravity.CENTER }
-        info.addView(infoBox("◉", "Ping", "-- ms", Color.CYAN), weight(1f))
-        info.addView(infoBox("▤", "P n r t o o l", "Auto", Color.rgb(40, 219, 181)), weight(1f))
-        info.addView(infoBox("●", "Location", "--", Color.MAGENTA), weight(1f))
-        info.addView(infoBox("ϟ", "IP Address", "--", Color.rgb(255, 183, 44)), weight(1f))
-        root.addView(info, match().apply { bottomMargin = dp(16) })
+        info.addView(infoBox("◉", "Ping", "-- ms", Color.CYAN), weight(1f)); info.addView(infoBox("▤", "Protocol", "Auto", Color.rgb(40, 219, 181)), weight(1f)); info.addView(infoBox("●", "Location", "--", Color.MAGENTA), weight(1f)); info.addView(infoBox("ϟ", "IP Address", "--", Color.rgb(255, 183, 44)), weight(1f))
+        root.addView(info, match().apply { height = dp(if (compact) 58 else 64); bottomMargin = dp(7) })
 
         val actions = LinearLayout(this).apply { gravity = Gravity.CENTER }
-        actions.addView(outlineButton("⚙  SETTINGS", Color.WHITE, 0), weight(1f).apply { rightMargin = dp(8) })
-        actions.addView(outlineButton("⟳  RESET", Color.WHITE, 0), weight(1f).apply { rightMargin = dp(8) })
-        actions.addView(Button(this).apply { text = "■  DISCONNECT"; textSize = 13f; setTextColor(Color.WHITE); background = rounded(Color.rgb(218, 43, 67), 14); isAllCaps = false }, weight(1f))
-        root.addView(actions, match().apply { height = dp(54); bottomMargin = dp(22) })
+        val settingsButton = outlineButton("⚙  SETTINGS", Color.WHITE, 0); val resetButton = outlineButton("⟳  RESET", Color.WHITE, 0)
+        val disconnectButton = Button(this).apply { text = "■  DISCONNECT"; textSize = 11f; setTextColor(Color.WHITE); background = rounded(Color.rgb(218, 43, 67), 14); isAllCaps = false }
+        actions.addView(settingsButton, weight(1f).apply { rightMargin = dp(5) }); actions.addView(resetButton, weight(1f).apply { rightMargin = dp(5) }); actions.addView(disconnectButton, weight(1f))
+        root.addView(actions, match().apply { height = dp(if (compact) 43 else 48); bottomMargin = dp(5) })
 
         val footer = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        footer.addView(VpnLogoView(this), LinearLayout.LayoutParams(dp(48), dp(48)))
-        footer.addView(textView("WinKoKo VPN\nv1.0.0", 13f, Color.rgb(198, 217, 247), Typeface.DEFAULT, Gravity.START).apply { setPadding(dp(8), 0, 0, 0) }, LinearLayout.LayoutParams(0, -2, 1f))
-        footer.addView(textView("Powered by V2Ray/Xray  🚀", 14f, Color.rgb(169, 193, 235), Typeface.DEFAULT, Gravity.END))
-        root.addView(footer, match())
+        footer.addView(VpnLogoView(this), LinearLayout.LayoutParams(dp(32), dp(32)))
+        footer.addView(textView("WinKoKo VPN  •  v1.3", 10f, Color.rgb(198, 217, 247), Typeface.DEFAULT, Gravity.START).apply { setPadding(dp(6), 0, 0, 0) }, LinearLayout.LayoutParams(0, -2, 1f))
+        footer.addView(textView("Powered by V2Ray/Xray", 10f, Color.rgb(169, 193, 235), Typeface.DEFAULT, Gravity.END))
+        root.addView(footer, match().apply { height = dp(32) })
 
-        scroll.addView(root)
-        frame.addView(scroll, FrameLayout.LayoutParams(-1, -1))
         setContentView(frame)
         updateButton.setOnClickListener { updateSubscription() }
         connectButton.setOnClickListener { toggleVpn() }
+        disconnectButton.setOnClickListener {
+            if (prefs.getBoolean("vpn_running", false)) {
+                stopService(Intent(this, WinKoKoVpnService::class.java))
+                prefs.edit().putBoolean("vpn_running", false).apply()
+                refreshConnectionState()
+            }
+        }
+        resetButton.setOnClickListener {
+            subscriptionUrl.setText(DEFAULT_SUBSCRIPTION_URL)
+            prefs.edit().remove("subscription_content").remove("selected_node").apply()
+            nodes.clear()
+            refreshNodesSpinner()
+            statusText.text = "Ready"
+            statusDot.setTextColor(Color.rgb(242, 183, 64))
+        }
+        settingsButton.setOnClickListener { Toast.makeText(this, "Settings will be available in the next update", Toast.LENGTH_SHORT).show() }
+        serverListButton.setOnClickListener { if (nodes.isEmpty()) updateSubscription() else Toast.makeText(this, "Select a server above", Toast.LENGTH_SHORT).show() }
     }
 
     private fun textView(value: String, size: Float, color: Int, face: Typeface, align: Int) = TextView(this).apply {
