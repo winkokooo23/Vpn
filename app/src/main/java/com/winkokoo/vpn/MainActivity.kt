@@ -83,144 +83,194 @@ class MainActivity : Activity() {
     }
 
     private fun buildUi() {
+        val frame = FrameLayout(this).apply { setBackgroundColor(bgColor) }
+        frame.addView(TechBackdropView(this), FrameLayout.LayoutParams(-1, -1))
+
         val scroll = ScrollView(this).apply {
-            setBackgroundColor(bgColor)
             isFillViewport = true
-        }
-
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(22), dp(24), dp(22), dp(28))
-        }
-
-        root.addView(
-            VpnLogoView(this),
-            LinearLayout.LayoutParams(dp(104), dp(104)).apply {
-                bottomMargin = dp(12)
-            }
-        )
-
-        root.addView(
-            TextView(this).apply {
-                this.text = "WinKoKo VPN"
-                textSize = 30f
-                setTextColor(this@MainActivity.text)
-                gravity = Gravity.CENTER
-                typeface = Typeface.DEFAULT_BOLD
-            },
-            match().apply { bottomMargin = dp(3) }
-        )
-
-        root.addView(
-            TextView(this).apply {
-                this.text = "Fast • Secure • Private"
-                textSize = 14f
-                setTextColor(secondary)
-                gravity = Gravity.CENTER
-            },
-            match().apply { bottomMargin = dp(24) }
-        )
-
-        val subscriptionCard = card()
-        subscriptionCard.addView(label("SUBSCRIPTION URL"))
-        subscriptionUrl = EditText(this).apply {
-            hint = "Paste V2Ray / Xray subscription URL"
-            setHintTextColor(Color.rgb(100, 112, 128))
-            setTextColor(this@MainActivity.text)
-            textSize = 14f
-            setSingleLine(true)
-            inputType = android.text.InputType.TYPE_CLASS_TEXT or
-                    android.text.InputType.TYPE_TEXT_VARIATION_URI
-            setPadding(dp(3), dp(10), dp(3), dp(10))
-            background = null
-        }
-        subscriptionCard.addView(
-            subscriptionUrl,
-            LinearLayout.LayoutParams(-1, dp(52))
-        )
-
-        updateButton = Button(this).apply {
-            this.text = "UPDATE SUBSCRIPTION"
-            textSize = 13f
-            setTextColor(Color.WHITE)
-            isAllCaps = false
-            background = rounded(Color.rgb(35, 49, 63), 14)
-        }
-        subscriptionCard.addView(
-            updateButton,
-            LinearLayout.LayoutParams(-1, dp(50))
-        )
-        root.addView(subscriptionCard, match().apply { bottomMargin = dp(16) })
-
-        val nodeCard = card()
-        nodeCard.addView(label("SERVER"))
-        nodeSpinner = Spinner(this).apply {
+            overScrollMode = View.OVER_SCROLL_NEVER
             setBackgroundColor(Color.TRANSPARENT)
         }
-        nodeCard.addView(
-            nodeSpinner,
-            LinearLayout.LayoutParams(-1, dp(54))
-        )
-        root.addView(nodeCard, match().apply { bottomMargin = dp(16) })
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(22), dp(18), dp(22), dp(24))
+        }
 
-        val statusCard = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
+        val top = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(12))
-            background = rounded(cardColor, 16)
         }
-        statusDot = TextView(this).apply {
-            this.text = "●"
-            textSize = 18f
-            setTextColor(Color.rgb(235, 82, 82))
+        top.addView(iconText("☰", 29f, text), LinearLayout.LayoutParams(dp(48), dp(48)))
+        top.addView(Space(this), LinearLayout.LayoutParams(0, 1, 1f))
+        top.addView(outlineButton("👑  PRO", Color.rgb(255, 184, 53), 120), LinearLayout.LayoutParams(dp(120), dp(46)))
+        top.addView(iconText("↗", 28f, text), LinearLayout.LayoutParams(dp(46), dp(48)))
+        top.addView(iconText("⚙", 28f, text), LinearLayout.LayoutParams(dp(46), dp(48)))
+        root.addView(top, match().apply { bottomMargin = dp(8) })
+
+        root.addView(HeroLogoView(this), LinearLayout.LayoutParams(-1, dp(190)).apply { bottomMargin = dp(2) })
+        root.addView(textView("WinKoKo VPN", 34f, text, Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(3) })
+        root.addView(textView("F a s t   •   S e c u r e   •   U n l i m i t e d", 13f, Color.rgb(224, 233, 255), Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(18) })
+
+        val subscription = glassCard()
+        val subscriptionRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+        subscriptionRow.addView(iconTile("↗", Color.rgb(32, 106, 210)), LinearLayout.LayoutParams(dp(74), dp(74)))
+        val urlColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(14), 0, dp(8), 0) }
+        urlColumn.addView(textView("V2Ray Subscription URL", 15f, Color.rgb(206, 219, 246), Typeface.DEFAULT, Gravity.START), match().apply { bottomMargin = dp(2) })
+        subscriptionUrl = EditText(this).apply {
+            hint = "Paste your subscription URL here..."
+            setHintTextColor(Color.rgb(133, 151, 192))
+            setTextColor(text)
+            textSize = 14f
+            setSingleLine(true)
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_URI
+            setPadding(0, dp(3), 0, dp(3))
+            background = null
         }
-        statusCard.addView(this.statusDot, LinearLayout.LayoutParams(dp(30), -2))
-        statusText = TextView(this).apply {
-            this.text = "Disconnected"
-            textSize = 16f
-            setTextColor(this@MainActivity.text)
-            typeface = Typeface.DEFAULT_BOLD
-        }
-        statusCard.addView(statusText)
-        root.addView(
-            statusCard,
-            match().apply { height = dp(58); bottomMargin = dp(18) }
-        )
+        urlColumn.addView(subscriptionUrl, LinearLayout.LayoutParams(-1, dp(42)))
+        subscriptionRow.addView(urlColumn, LinearLayout.LayoutParams(0, -2, 1f))
+        subscriptionRow.addView(outlineButton("▣", Color.WHITE, 52), LinearLayout.LayoutParams(dp(52), dp(52)).apply { rightMargin = dp(10) })
+        updateButton = gradientButton("☁  UPDATE", 15f)
+        subscriptionRow.addView(updateButton, LinearLayout.LayoutParams(dp(170), dp(58)))
+        subscription.addView(subscriptionRow)
+        root.addView(subscription, match().apply { bottomMargin = dp(16) })
+
+        val server = glassCard()
+        val serverRow = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+        serverRow.addView(iconTile("▤", Color.rgb(30, 91, 193)), LinearLayout.LayoutParams(dp(74), dp(74)))
+        val serverColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(14), 0, dp(12), 0) }
+        serverColumn.addView(textView("Server", 15f, Color.rgb(206, 219, 246), Typeface.DEFAULT, Gravity.START))
+        nodeSpinner = Spinner(this).apply { setBackgroundColor(Color.TRANSPARENT) }
+        serverColumn.addView(nodeSpinner, LinearLayout.LayoutParams(-1, dp(46)))
+        serverRow.addView(serverColumn, LinearLayout.LayoutParams(0, -2, 1f))
+        serverRow.addView(outlineButton("☷  SERVER LIST", Color.WHITE, 185), LinearLayout.LayoutParams(dp(185), dp(58)))
+        server.addView(serverRow)
+        root.addView(server, match().apply { bottomMargin = dp(18) })
 
         connectButton = Button(this).apply {
-            this.text = "CONNECT"
-            textSize = 17f
-            setTextColor(Color.BLACK)
+            text = "⏻\nCONNECT"
+            textSize = 19f
+            setTextColor(Color.WHITE)
             typeface = Typeface.DEFAULT_BOLD
             isAllCaps = false
-            background = rounded(green, 18)
-            elevation = dp(4).toFloat()
+            gravity = Gravity.CENTER
+            background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(Color.rgb(13, 40, 111), Color.rgb(7, 104, 219))).apply { shape = GradientDrawable.OVAL; setStroke(dp(4), Color.rgb(26, 169, 255)) }
+            elevation = dp(8).toFloat()
         }
-        root.addView(
-            connectButton,
-            match().apply { height = dp(62); bottomMargin = dp(18) }
-        )
+        val connectFrame = FrameLayout(this).apply { addView(connectButton, FrameLayout.LayoutParams(dp(230), dp(230), Gravity.CENTER)) }
+        root.addView(connectFrame, match().apply { height = dp(250); bottomMargin = dp(8) })
 
-        root.addView(
-            TextView(this).apply {
-                this.text = "WinKoKo VPN  •  Xray powered"
-                textSize = 12f
-                setTextColor(Color.rgb(83, 95, 111))
-                gravity = Gravity.CENTER
-            },
-            match()
-        )
+        val statusCard = pill()
+        statusDot = TextView(this).apply { text = "●"; textSize = 18f; setTextColor(Color.rgb(255, 68, 92)) }
+        statusText = textView("Disconnected", 16f, Color.rgb(255, 86, 108), Typeface.DEFAULT_BOLD, Gravity.START)
+        statusCard.addView(statusDot, LinearLayout.LayoutParams(dp(30), -2))
+        statusCard.addView(statusText, LinearLayout.LayoutParams(0, -2, 1f))
+        statusCard.addView(textView("Not connected", 13f, Color.rgb(172, 190, 230), Typeface.DEFAULT, Gravity.END))
+        root.addView(statusCard, match().apply { height = dp(58); bottomMargin = dp(16) })
+
+        val stats = LinearLayout(this).apply { gravity = Gravity.CENTER; background = rounded(Color.argb(100, 7, 32, 82), 18); setPadding(dp(6), dp(12), dp(6), dp(12)) }
+        stats.addView(stat("⬇", "Download", "0 B/s", Color.rgb(0, 246, 184)), weight(1f))
+        stats.addView(stat("◷", "Duration", "00:00:00", Color.rgb(35, 190, 255)), weight(1f))
+        stats.addView(stat("⬆", "Upload", "0 B/s", Color.rgb(255, 73, 233)), weight(1f))
+        root.addView(stats, match().apply { bottomMargin = dp(14) })
+
+        val info = LinearLayout(this).apply { gravity = Gravity.CENTER }
+        info.addView(infoBox("◉", "Ping", "-- ms", Color.CYAN), weight(1f))
+        info.addView(infoBox("▤", "P n r t o o l", "Auto", Color.rgb(40, 219, 181)), weight(1f))
+        info.addView(infoBox("●", "Location", "--", Color.MAGENTA), weight(1f))
+        info.addView(infoBox("ϟ", "IP Address", "--", Color.rgb(255, 183, 44)), weight(1f))
+        root.addView(info, match().apply { bottomMargin = dp(16) })
+
+        val actions = LinearLayout(this).apply { gravity = Gravity.CENTER }
+        actions.addView(outlineButton("⚙  SETTINGS", Color.WHITE, 0), weight(1f).apply { rightMargin = dp(8) })
+        actions.addView(outlineButton("⟳  RESET", Color.WHITE, 0), weight(1f).apply { rightMargin = dp(8) })
+        actions.addView(Button(this).apply { text = "■  DISCONNECT"; textSize = 13f; setTextColor(Color.WHITE); background = rounded(Color.rgb(218, 43, 67), 14); isAllCaps = false }, weight(1f))
+        root.addView(actions, match().apply { height = dp(54); bottomMargin = dp(22) })
+
+        val footer = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+        footer.addView(VpnLogoView(this), LinearLayout.LayoutParams(dp(48), dp(48)))
+        footer.addView(textView("WinKoKo VPN\nv1.0.0", 13f, Color.rgb(198, 217, 247), Typeface.DEFAULT, Gravity.START).apply { setPadding(dp(8), 0, 0, 0) }, LinearLayout.LayoutParams(0, -2, 1f))
+        footer.addView(textView("Powered by V2Ray/Xray  🚀", 14f, Color.rgb(169, 193, 235), Typeface.DEFAULT, Gravity.END))
+        root.addView(footer, match())
 
         scroll.addView(root)
-        setContentView(scroll)
-
+        frame.addView(scroll, FrameLayout.LayoutParams(-1, -1))
+        setContentView(frame)
         updateButton.setOnClickListener { updateSubscription() }
         connectButton.setOnClickListener { toggleVpn() }
     }
 
+    private fun textView(value: String, size: Float, color: Int, face: Typeface, align: Int) = TextView(this).apply {
+        text = value
+        textSize = size
+        setTextColor(color)
+        typeface = face
+        gravity = align
+        includeFontPadding = true
+    }
+
+    private fun glassCard() = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(dp(14), dp(12), dp(14), dp(12))
+        background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(Color.argb(175, 7, 37, 98), Color.argb(165, 9, 20, 63))).apply { cornerRadius = dp(22).toFloat(); setStroke(dp(1), Color.rgb(32, 113, 234)) }
+    }
+
+    private fun pill() = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(dp(16), dp(10), dp(16), dp(10))
+        background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(Color.argb(150, 8, 37, 93), Color.argb(150, 8, 18, 58))).apply { cornerRadius = dp(28).toFloat(); setStroke(dp(1), Color.rgb(30, 102, 210)) }
+    }
+
+    private fun iconText(value: String, size: Float, color: Int) = textView(value, size, color, Typeface.DEFAULT_BOLD, Gravity.CENTER)
+
+    private fun iconTile(symbol: String, color: Int) = TextView(this).apply {
+        text = symbol
+        textSize = 31f
+        setTextColor(Color.WHITE)
+        gravity = Gravity.CENTER
+        background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(color, Color.rgb(9, 52, 137))).apply { cornerRadius = dp(17).toFloat() }
+    }
+
+    private fun outlineButton(label: String, color: Int, width: Int): Button = Button(this).apply {
+        text = label
+        textSize = 13f
+        setTextColor(color)
+        isAllCaps = false
+        typeface = Typeface.DEFAULT_BOLD
+        background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(Color.argb(90, 24, 86, 190), Color.argb(100, 12, 31, 86))).apply { cornerRadius = dp(14).toFloat(); setStroke(dp(1), Color.rgb(35, 131, 255)) }
+        if (width > 0) minimumWidth = dp(width)
+    }
+
+    private fun gradientButton(label: String, size: Float) = Button(this).apply {
+        text = label
+        textSize = size
+        setTextColor(Color.WHITE)
+        typeface = Typeface.DEFAULT_BOLD
+        isAllCaps = false
+        background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(Color.rgb(17, 207, 255), Color.rgb(121, 53, 238))).apply { cornerRadius = dp(14).toFloat() }
+    }
+
+    private fun stat(symbol: String, title: String, value: String, tint: Int): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        addView(textView(symbol, 25f, tint, Typeface.DEFAULT_BOLD, Gravity.CENTER))
+        addView(textView(title, 12f, Color.rgb(180, 202, 240), Typeface.DEFAULT, Gravity.CENTER))
+        addView(textView(value, 18f, Color.WHITE, Typeface.DEFAULT_BOLD, Gravity.CENTER))
+    }
+
+    private fun infoBox(symbol: String, title: String, value: String, tint: Int): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        setPadding(dp(4), dp(8), dp(4), dp(8))
+        background = rounded(Color.argb(120, 8, 34, 88), 16)
+        addView(textView(symbol, 22f, tint, Typeface.DEFAULT_BOLD, Gravity.CENTER))
+        addView(textView(title, 11f, Color.rgb(173, 198, 238), Typeface.DEFAULT, Gravity.CENTER))
+        addView(textView(value, 14f, Color.WHITE, Typeface.DEFAULT_BOLD, Gravity.CENTER))
+    }
+
+    private fun weight(value: Float) = LinearLayout.LayoutParams(0, -1, value)
+
     private fun loadSavedState() {
-        subscriptionUrl.setText(prefs.getString("subscription_url", "") ?: "")
+        subscriptionUrl.setText(prefs.getString("subscription_url", DEFAULT_SUBSCRIPTION_URL) ?: DEFAULT_SUBSCRIPTION_URL)
         val savedContent = prefs.getString("subscription_content", null)
         if (!savedContent.isNullOrBlank()) {
             try {
@@ -734,6 +784,57 @@ class MainActivity : Activity() {
     companion object {
         private const val VPN_REQUEST_CODE = 1001
         private const val ACTION_VPN_STATE = "com.winkoko.vpn.STATE"
+        private const val DEFAULT_SUBSCRIPTION_URL = "https://vip.winkokooolovekaykay.dpdns.org/sub?token=3ee3eb89b11162cd274044102a1c7ebd&b64"
+    }
+
+    class TechBackdropView(context: Context) : View(context) {
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        override fun onDraw(canvas: Canvas) {
+            val w = width.toFloat(); val h = height.toFloat()
+            paint.shader = LinearGradient(0f, 0f, w, h, Color.rgb(3, 10, 33), Color.rgb(4, 44, 105), Shader.TileMode.CLAMP)
+            canvas.drawRect(0f, 0f, w, h, paint)
+            paint.shader = null
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 1.5f
+            paint.color = Color.argb(75, 48, 153, 255)
+            for (i in 1..8) {
+                val y = h * (0.06f + i * 0.055f)
+                canvas.drawLine(0f, y, w, y - h * .12f, paint)
+            }
+            paint.style = Paint.Style.FILL
+            paint.color = Color.argb(80, 0, 210, 255)
+            canvas.drawCircle(w * .50f, h * .18f, w * .34f, paint)
+            paint.color = Color.argb(45, 94, 64, 255)
+            canvas.drawCircle(w * .14f, h * .52f, w * .25f, paint)
+            canvas.drawCircle(w * .88f, h * .65f, w * .23f, paint)
+        }
+    }
+
+    class HeroLogoView(context: Context) : View(context) {
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        override fun onDraw(canvas: Canvas) {
+            val cx = width / 2f; val cy = height * .45f; val r = width * .22f
+            paint.style = Paint.Style.FILL
+            paint.shader = RadialGradient(cx - r * .3f, cy - r * .35f, r * 1.6f, Color.rgb(36, 237, 255), Color.rgb(6, 45, 170), Shader.TileMode.CLAMP)
+            canvas.drawCircle(cx, cy, r, paint)
+            paint.shader = null
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = dp(context, 7).toFloat()
+            paint.color = Color.rgb(16, 202, 255)
+            canvas.drawOval(cx - r * 1.65f, cy - r * .52f, cx + r * 1.65f, cy + r * .52f, paint)
+            canvas.drawOval(cx - r * .62f, cy - r * 1.65f, cx + r * .62f, cy + r * 1.65f, paint)
+            paint.style = Paint.Style.FILL
+            paint.color = Color.WHITE
+            paint.typeface = Typeface.DEFAULT_BOLD
+            paint.textSize = r * 1.25f
+            paint.textAlign = Paint.Align.CENTER
+            canvas.drawText("W", cx, cy + r * .43f, paint)
+            paint.textSize = r * .30f
+            paint.color = Color.rgb(8, 43, 143)
+            canvas.drawText("VPN", cx + r * .72f, cy + r * .85f, paint)
+            paint.textAlign = Paint.Align.LEFT
+        }
+        private fun dp(context: Context, value: Int) = (value * context.resources.displayMetrics.density).toInt()
     }
 
     class VpnLogoView(context: Context) : View(context) {
