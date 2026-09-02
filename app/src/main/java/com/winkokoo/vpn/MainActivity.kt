@@ -105,7 +105,14 @@ class MainActivity : Activity() {
         top.addView(iconText("⚙", 28f, text), LinearLayout.LayoutParams(dp(46), dp(48)))
         root.addView(top, match().apply { bottomMargin = dp(8) })
 
-        root.addView(HeroLogoView(this), LinearLayout.LayoutParams(-1, dp(190)).apply { bottomMargin = dp(2) })
+        val heroLogo = ImageView(this).apply {
+            setImageResource(R.drawable.winkoko_launcher_logo)
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            adjustViewBounds = true
+            setPadding(dp(8), 0, dp(8), 0)
+            contentDescription = "WinKoKo VPN logo"
+        }
+        root.addView(heroLogo, LinearLayout.LayoutParams(-1, dp(190)).apply { bottomMargin = dp(2) })
         root.addView(textView("WinKoKo VPN", 34f, text, Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(3) })
         root.addView(textView("F a s t   •   S e c u r e   •   U n l i m i t e d", 13f, Color.rgb(224, 233, 255), Typeface.DEFAULT_BOLD, Gravity.CENTER), match().apply { bottomMargin = dp(18) })
 
