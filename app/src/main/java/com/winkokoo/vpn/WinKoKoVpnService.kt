@@ -54,6 +54,8 @@ class WinKoKoVpnService : VpnService() {
 
     override fun onCreate() {
         super.onCreate()
+        // Required by AndroidLibXrayLite for certificates/assets and config file access.
+        Libv2ray.initCoreEnv(filesDir.absolutePath, "")
         createNotificationChannel()
         val notification = createNotification()
         if (Build.VERSION.SDK_INT >= 34) {
@@ -80,11 +82,13 @@ class WinKoKoVpnService : VpnService() {
                 if (!core.getIsRunning()) {
                     setState(false, "Starting Xray...")
                     establishVpnInterface()
-                    core.startLoop(config, vpnInterface.fd.toLong().toInt())
+                    val fd = vpnInterface.fd
+                    if (fd < 0) throw IllegalStateException("Invalid VPN file descriptor")
+                    core.startLoop(config, fd)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Xray start failed", e)
-                setState(false, "Connection failed")
+                setState(false, "Connection failed: ${e.message ?: "Xray could not start"}")
                 closeInterface()
                 stopSelf()
             }
@@ -130,6 +134,7 @@ class WinKoKoVpnService : VpnService() {
 
     private fun closeInterface() {
         try {
+            if (::vpnInterface.isInitialized && !vpnInterface.fileDescriptor.valid()) return
             if (::vpnInterface.isInitialized) vpnInterface.close()
         } catch (_: Exception) {
         }
