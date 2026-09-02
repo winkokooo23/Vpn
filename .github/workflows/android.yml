@@ -53,7 +53,7 @@ jobs:
           gradle-version: "8.9"
 
       - name: Build Debug APK
-        run: ./gradlew --no-daemon clean assembleDebug --stacktrace
+        run: chmod +x gradlew && ./gradlew --no-daemon clean assembleDebug --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -64,7 +64,7 @@ jobs:
           retention-days: 14
 
       - name: Build Release APK
-        run: ./gradlew --no-daemon assembleRelease --stacktrace
+        run: chmod +x gradlew && ./gradlew --no-daemon assembleRelease --stacktrace
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
