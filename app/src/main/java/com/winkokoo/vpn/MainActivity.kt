@@ -118,7 +118,7 @@ class MainActivity : Activity() {
         subscriptionUrl = EditText(this).apply {
             hint = "Paste your subscription URL here..."
             setHintTextColor(Color.rgb(133, 151, 192))
-            setTextColor(text)
+            setTextColor(this@MainActivity.text)
             textSize = 14f
             setSingleLine(true)
             inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_URI
