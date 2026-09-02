@@ -1,0 +1,12 @@
+# Gradle
+.gradle/
+build/
+app/build/
+
+# Android Studio
+.idea/
+*.iml
+local.properties
+
+# Native/runtime artifact downloaded by CI
+app/libs/*.aar
